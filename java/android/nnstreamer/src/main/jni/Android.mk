@@ -178,6 +178,10 @@ NNS_SUBPLUGINS += flatbuffers-subplugin
 endif
 endif
 
+include $(LOCAL_PATH)/Android-llamacpp.mk
+NNS_API_FLAGS += -DENABLE_LLAMACPP=1
+NNS_SUBPLUGINS += llamacpp-subplugin
+
 # Remove any duplicates.
 NNS_SUBPLUGINS := $(sort $(NNS_SUBPLUGINS))
 
