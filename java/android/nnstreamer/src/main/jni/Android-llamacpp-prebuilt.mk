@@ -11,6 +11,15 @@ ifndef LLAMACPP_LIB_PATH
 $(error LLAMACPP_LIB_PATH is not defined!)
 endif
 
+# Check Target ABI. Only supports arm64 and x86_64.
+ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
+TF_LITE_LIB_PATH := $(LLAMACPP_LIB_PATH)/lib/arm64
+else ifeq ($(TARGET_ARCH_ABI),x86_64)
+TF_LITE_LIB_PATH := $(LLAMACPP_LIB_PATH)/lib/x86_64
+else
+$(error Target arch ABI not supported: $(TARGET_ARCH_ABI))
+endif
+
 LLAMACPP_PREBUILT_LIBS :=
 
 #------------------------------------------------------
