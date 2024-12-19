@@ -73,7 +73,10 @@
 ##@@   --enable_mxnet=(yes|no)
 ##@@       'yes'      : build with sub-plugin for MXNet. Currently, mxnet 1.9.1 version supported.
 ##@@       'no'       : [default] build without the sub-plugin for MXNet
-##@@ 
+##@@   --enable_llamacpp=(yes|no)
+##@@       'yes'      : build with sub-plugin for llama.cpp. Currently, llamacpp b4358 version supported.
+##@@       'no'       : [default] build without the sub-plugin for llamacpp
+##@@
 ##@@ options for tensor converter/decoder sub-plugins:
 ##@@   --enable_flatbuf=(yes|no)
 ##@@       'yes'      : [default]
@@ -158,6 +161,10 @@ tf_lite_vers_support="2.8.1 2.16.1"
 # Set NNFW version (https://github.com/Samsung/ONE/releases)
 nnfw_ver="1.17.0"
 enable_nnfw_ext="no"
+
+# Enable option for llama.cpp
+llamacpp_ver="b4358"
+enable_llamacpp="no"
 
 # Find '--help' in the given arguments
 arg_help="--help"
@@ -278,6 +285,9 @@ for arg in "$@"; do
         --enable_mqtt=*)
             enable_mqtt=${arg#*=}
             ;;
+        --enable_llamacpp=*)
+            enable_llamacpp=${arg#*=}
+            ;;
     esac
 done
 
@@ -376,6 +386,10 @@ fi
 
 if [[ $enable_mqtt == "yes" ]]; then
     echo "Build with paho.mqtt.c-v$paho_mqtt_c_ver for the mqtt plugin"
+fi
+
+if [[ $enable_llamacpp == "yes" ]]; then
+    echo "Build with llama.cpp"
 fi
 
 # Set library name
@@ -520,6 +534,10 @@ fi
 
 if [[ $enable_mqtt == "yes" ]]; then
     cp $nnstreamer_android_resource_dir/external/paho-mqtt-c-${paho_mqtt_c_ver}.tar.xz ./$build_dir/external
+fi
+
+if [[ $enable_llamacpp == "yes" ]]; then
+    cp $nnstreamer_android_resource_dir/external/llamacpp-${llamacpp_ver}.tar.xz ./$build_dir/external
 fi
 
 pushd ./$build_dir
@@ -685,6 +703,11 @@ fi
 if [[ $enable_mqtt == "yes" ]]; then
     sed -i "s|ENABLE_MQTT := false|ENABLE_MQTT := true|" nnstreamer/src/main/jni/Android.mk
     tar -xJf ./external/paho-mqtt-c-${paho_mqtt_c_ver}.tar.xz -C ./nnstreamer/src/main/jni
+fi
+
+if [[ $enable_llamacpp == "yes" ]]; then
+    sed -i "s|ENABLE_LLAMACPP := false|ENABLE_LLAMACPP := true|" nnstreamer/src/main/jni/Android.mk
+    tar -xJf ./external/llamacpp-${llamacpp_ver}.tar.xz -C ./nnstreamer/src/main/jni
 fi
 
 # If build option is single-shot only, remove unnecessary files.
